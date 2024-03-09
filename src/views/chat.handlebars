@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <style>
+        /* Estilos básicos para el chat */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+        .chat-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #e0f7fa;
+        }
+        .message .user {
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        {{#each messages}}
+            <div class="message">
+                <span class="user">{{user}}:</span> {{message}}
+            </div>
+        {{/each}}
+        <form id="messageForm">
+            <input type="text" id="userInput" placeholder="Tu correo">
+            <input type="text" id="messageInput" placeholder="Escribe tu mensaje">
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+
+    <script>
+        const messageForm = document.getElementById('messageForm');
+        const userInput = document.getElementById('userInput');
+        const messageInput = document.getElementById('messageInput');
+
+        messageForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const user = userInput.value.trim();
+            const message = messageInput.value.trim();
+            if (user && message) {
+                await sendMessage(user, message);
+                messageInput.value = '';
+            }
+        });
+
+        async function sendMessage(user, message) {
+            try {
+                const response = await fetch('/api/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ user, message })
+                });
+                if (!response.ok) {
+                    throw new Error('Error al enviar el mensaje');
+                }
+                console.log('Mensaje enviado correctamente');
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
